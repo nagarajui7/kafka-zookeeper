@@ -1,8 +1,8 @@
 # kafka-zookeeper
 
-Creating statefulsets for kafka and zookeeper
-Service for kafka. Type is NodePort 
-kubectl create -f kafka-svc.yml
+Creating statefulsets for kafka and zookeeper__
+Service for kafka. Type is NodePort__
+kubectl create -f kafka-svc.yml__
 
 Statefulset for kafka. Edit the yaml file for KAFKA_ADVERTISED_PORT with NodePort and KAFKA_ADVERTISED_HOST_NAME with NodeIP 
 details from the service created
