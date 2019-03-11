@@ -12,7 +12,7 @@ Statefulset for zookeeper
 kubectl create -f zookeeper.yml  
 
 Creating a topic and sending message  
-kubectl exec -it <pod_name> -- /bin/bash /opt/kafka/bin/kafka-console-producer.sh --broker-list <Node_IP>:<Node_Port> --topic <topic-name>  
+kubectl exec -it <pod_name> -- /bin/bash /opt/kafka/bin/kafka-console-producer.sh --broker-list <Node_IP>:<Node_Port> --topic <topic-name>    
 kubectl exec -it kafka-broker0-0 -- /bin/bash /opt/kafka/bin/kafka-console-producer.sh --broker-list 34.73.88.6:32327 --topic test  
 
 Consuming a message  
