@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-kafka-2
+spec:
+  capacity:
+    storage: 1Gi
+  storageClassName: do-block-storage
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/reddisekhara_n"
