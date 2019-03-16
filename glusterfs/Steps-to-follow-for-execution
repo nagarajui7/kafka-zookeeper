@@ -3,16 +3,16 @@ Prerequisites:
 
 #######################Creating fake block device#############################
 Create any file in your favourite directory:
-#touch <file-name>
-#dd if=/dev/zero of=<path of the file> bs=1M count=25600
-#sudo losetup /dev/loop0 <path of file> 
-#sudo modprobe dm_thin_pool
+touch <file-name>
+dd if=/dev/zero of=<path of the file> bs=1M count=25600
+sudo losetup /dev/loop0 <path of file> 
+sudo modprobe dm_thin_pool
 
 Note:
 1.loop0 is not mandatory, it can be loop1, loop2 etc. you can check for any available loops using "lsblk -f"
 2.If anything goes wrong, Run sudo losetup -d /dev/loop0
 
-#sudo vi /etc/systemd/system/loopback_gluster.service
+sudo vi /etc/systemd/system/loopback_gluster.service
 Add the below content:
 [Unit]
 Description=Create the loopback device for GlusterFS
@@ -26,7 +26,7 @@ ExecStart=/usr/bin/bash -c "modprobe dm_thin_pool && [ -b /dev/loop0 ] || losetu
 [Install]
 WantedBy=local-fs.target
 
-#sudo systemctl enable /etc/systemd/system/loopback_gluster.service
+sudo systemctl enable /etc/systemd/system/loopback_gluster.service
 
 ########Glusterfs pods build#####################
 kubectl apply -f glusterfs-daemonset.yaml
