@@ -1,0 +1,75 @@
+Prerequisites:
+3Nodes each of 50GB memory
+
+#######################Creating fake block device#############################
+Create any file in your favourite directory:
+#touch <file-name>
+#dd if=/dev/zero of=<path of the file> bs=1M count=25600
+#sudo losetup /dev/loop0 <path of file> 
+#sudo modprobe dm_thin_pool
+
+Note:
+1.loop0 is not mandatory, it can be loop1, loop2 etc. you can check for any available loops using "lsblk -f"
+2.If anything goes wrong, Run sudo losetup -d /dev/loop0
+
+#sudo vi /etc/systemd/system/loopback_gluster.service
+Add the below content:
+[Unit]
+Description=Create the loopback device for GlusterFS
+DefaultDependencies=false
+Before=local-fs.target
+After=systemd-udev-settle.service
+Requires=systemd-udev-settle.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -c "modprobe dm_thin_pool && [ -b /dev/loop0 ] || losetup /dev/loop0 /home/core/glusterimage"
+[Install]
+WantedBy=local-fs.target
+
+#sudo systemctl enable /etc/systemd/system/loopback_gluster.service
+
+########Glusterfs pods build#####################
+kubectl apply -f glusterfs-daemonset.yaml
+kubectl label node <node-name> storagenode=glusterfs
+kubectl label node <node-name> storagenode=glusterfs
+kubectl label node <node-name> storagenode=glusterfs
+
+########config secret creation###################
+kubectl create secret generic heketi-config-secret --from-file=private_key=<path of id_rsa> --from-file=heketi.json --from-file=topology.json
+
+########Heketi deployment###############
+kubectl create -f heketi-service-account.yaml
+kubectl create -f deploy-heketi-deployment.yaml
+
+Once the pod comes up, run curl <node-ip/node-name>:30625/hello and make sure u get a output(Hello from Heketi)
+
+################Creaating cluster-role and role-binding#########################
+kubectl create clusterrole heketi-service-account --verb=get,list,watch,create --resource=pods,pods/status,pods/exec
+kubectl create -f rolebinding.yml
+
+#############setting up the gluster to interact with heketi#######################
+In the topology.json file, check for tags called manage,storage and devices and supply the values as node-name and ip-address(internal
+and fake block device which we have created at the start of deployment.
+
+heketi-cli -s http://<node-name/node-ip>:30625 topology load --json=topology.json
+
+Once this is successful, you will get a output similar to:
+
+Creating cluster ... ID: 5b930ef6081fd22e895c25a3dfb0c516
+    Allowing file volumes on cluster.
+    Allowing block volumes on cluster.
+    Creating node 10.30.1.15 ... ID: b120572be40db6c1d979c3903876430b
+        Adding device /dev/sdb ... OK
+    Creating node 10.30.1.16 ... ID: 7ce13ffc5eabe64a3791e93233fd3c1a
+        Adding device /dev/sdb ... OK
+    Creating node 10.30.1.17 ... ID: f9abdc2e5d4cfa17c035a97f984a1a3b
+        Adding device /dev/sdb ... OK
+
+##################Creating storage class and a PVC for testing#####################
+kubectl get endpoints, note down the ip address related to deploy-heketi and replace it in the storage.yml file
+kubectl create -f storage.yml
+kubectl create -f pvc-heketi.yml
+
+you can see a pv has been automatically provisioned after a couple of minutes
+
+
