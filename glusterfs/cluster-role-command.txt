@@ -1,0 +1,1 @@
+kubectl create clusterrole heketi-service-account --verb=get,list,watch,create --resource=pods,pods/status,pods/exec
