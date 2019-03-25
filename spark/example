@@ -1,0 +1,14 @@
+#Enter into the spark master pod
+#Run kubectl exec -it <pod-name> -- pyspark
+#Run the below mentioned commands:
+#Expected output
+#{'brown': 2, 'lazy': 2, 'over': 2, 'fox': 2, 'dog': 2, 'quick': 2, 'the': 4, 'jumps': 2}
+
+words = 'the quick brown fox jumps over the\
+        lazy dog the quick brown fox jumps over the lazy dog'
+sc = SparkContext()
+seq = words.split()
+data = sc.parallelize(seq)
+counts = data.map(lambda word: (word, 1)).reduceByKey(lambda a, b: a + b).collect()
+dict(counts)
+sc.stop()
