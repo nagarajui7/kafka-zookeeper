@@ -45,30 +45,11 @@ spec:
           value: "5555"
         image: confluentinc/cp-kafka:4.1.2-2
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command:
-            - sh
-            - -ec
-            - /usr/bin/jps | /bin/grep -q SupportedKafka
-          failureThreshold: 3
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 5
         name: kafka-broker
         ports:
         - containerPort: 9092
           name: kafka
           protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          successThreshold: 1
-          tcpSocket:
-            port: kafka
-          timeoutSeconds: 5
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
