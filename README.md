@@ -22,3 +22,5 @@ kubectl exec -it kafka-broker0-0 -- /bin/bash /opt/kafka/bin/kafka-console-consu
 List the topics  
 kubectl exec -it <pod_name> -- /bin/bash /opt/kafka/bin/kafka-topics.sh --list --zookeeper <zookeeper_clusterIP>:<Cluster_Port(2181)>  
 kubectl exec -it kafka-broker0-0 -- /bin/bash /opt/kafka/bin/kafka-topics.sh --list --zookeeper 10.103.95.45:2181  
+
+Ref: https://www.admintome.com/blog/ultimate-guide-to-installing-kafka-docker-on-kubernetes/
